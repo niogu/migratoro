@@ -1,0 +1,29 @@
+{
+  "name": "niogu/migratoro",
+  "license": "MIT",
+  "require": {
+    "doctrine/dbal": "~2.0"
+  },
+  "require-dev": {
+    "orchestra/testbench": "^6",
+    "nunomaduro/collision": "^5"
+  },
+  "autoload": {
+    "psr-4": {
+      "Migratoro\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "App\\Models\\": "app\\Models",
+      "Migratoro\\Tests\\": "tests"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Migratoro\\MigratoroServiceProvider"
+      ]
+    }
+  }
+}
