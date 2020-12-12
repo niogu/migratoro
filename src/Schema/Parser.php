@@ -13,7 +13,8 @@ use RuntimeException;
  */
 class Parser
 {
-    private $currentNameSpace = '\\App\\Models\\';
+    private $currentNamespace = '\\App\\Models\\';
+    private $currentNamespaceDir = 'app/Models/';
     private $bufferForComma = '';
     private $baseIndent = null;
 
@@ -28,7 +29,7 @@ class Parser
     public function parse($text)
     {
         $schema = new Schema();
-        $schema->addNamespace(new NamespaceCommand($this->currentNameSpace, 'app/'));
+        $schema->addNamespace(new NamespaceCommand($this->currentNamespace, $this->currentNamespaceDir));
 
         foreach ($this->getLines($text) as $i => $line) {
             $result = $this->parseLine($line);
@@ -54,7 +55,7 @@ class Parser
 
             if ($result->getCommandType() == 'Namespace') {
                 /* @var NamespaceCommand $result */
-                $this->currentNameSpace = $result->getNamespace();
+                $this->currentNamespace = $result->getNamespace();
                 $schema->addNamespace($result);
             }
 
@@ -179,7 +180,7 @@ class Parser
 
     public function parseModel($line)
     {
-        $m = ModelCommand::fromString($line, $this->currentNameSpace);
+        $m = ModelCommand::fromString($line, $this->currentNamespace);
 
         if ($m) {
             $name = $m->getShortName();
