@@ -4,3 +4,4 @@ app/
 src/todo
 src/schema.txt
 VERSION
+.phpunit.result.cache

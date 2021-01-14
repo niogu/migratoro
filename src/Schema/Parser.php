@@ -83,6 +83,8 @@ class Parser
             }
         }
 
+        $schema->mirrorModels();
+
         foreach ($schema->getModels() as $model) {
             $model->addImplicitFields();
         }

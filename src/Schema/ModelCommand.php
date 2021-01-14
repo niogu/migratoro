@@ -26,26 +26,20 @@ class ModelCommand extends Command
 
     private $tableName;
 
+    private $mirrors;
+
     public function __construct($name, $namespace)
     {
-        if (Str::contains($name, '\\')) {
-            preg_match('#^(?P<namespace>.*?)\\\\(?P<short_name>[^\\\\]*?)$#', $name, $m);
-            $this->name = $this->shortName = $m['short_name'];
-            $this->namespace = $m['namespace'];
-            $this->fullName = $name;
-        } else {
-            $this->shortName = $name;
-            $this->namespace = $namespace;
-            $this->fullName = $namespace.$name;
-        }
-        $this->tableName = Str::plural(Str::snake($this->shortName));
+        $this->setNameAndNamespace($name, $namespace);
+        $this->updateTableName();
     }
 
     public static function fromString($line, $namespace)
     {
         $tableRx = '(\s*\((?P<table>[A-Za-z0-9_]+)\))?';
         $nameRx = '(?P<name>[A-Za-z0-9\\\\-]+)';
-        $regex = "#^$nameRx$tableRx\$#";
+        $mirrorRx = '(\s+mirror\((?P<mirror>[A-Za-z0-9\\\\-]+)\))?';
+        $regex = "#^$nameRx$tableRx$mirrorRx\$#";
 
         if (!preg_match($regex, $line, $m)) {
             return;
@@ -54,6 +48,10 @@ class ModelCommand extends Command
         $d = new self($m['name'], $namespace);
         if (isset($m['table'])) {
             $d->tableName = $m['table'];
+        }
+
+        if (isset($m['mirror'])) {
+            $d->mirrors = $m['mirror'];
         }
 
         return $d;
@@ -479,5 +477,33 @@ class ModelCommand extends Command
         }
 
         return $result;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMirrors()
+    {
+        return $this->mirrors;
+    }
+
+    public function updateTableName(): void
+    {
+        $this->tableName = Str::plural(Str::snake($this->shortName));
+    }
+
+    public function setNameAndNamespace($name, $namespace)
+    {
+        $m = null;
+        if (Str::contains($name, '\\')) {
+            preg_match('#^(?P<namespace>.*?)\\\\(?P<short_name>[^\\\\]*?)$#', $name, $m);
+            $this->name = $this->shortName = $m['short_name'];
+            $this->namespace = $m['namespace'];
+            $this->fullName = $name;
+        } else {
+            $this->shortName = $name;
+            $this->namespace = $namespace;
+            $this->fullName = $namespace.$name;
+        }
     }
 }

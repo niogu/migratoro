@@ -635,3 +635,11 @@ Podcast
 ```
 
 Now you can do `$user->podcasts[0]->subscription->created_at`.
+
+# Mirror tables
+
+```
+User2 mirror(User)
+```
+
+Now `User2` will be exactly like `User`

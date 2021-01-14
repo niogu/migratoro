@@ -35,6 +35,18 @@ class Schema
         return $result;
     }
 
+    public function mirrorModels()
+    {
+        foreach($this->models as $i => $model) {
+            if($origName = $model->getMirrors()) {
+                $clone = clone $this->getModel($origName);
+                $clone->setNameAndNamespace($model->getShortName(), $model->getNamespace());
+                $clone->updateTableName();
+                $this->models[$i] = $clone;
+            }
+        }
+    }
+
     /**
      * @param $name
      *

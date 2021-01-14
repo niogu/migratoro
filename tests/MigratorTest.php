@@ -648,7 +648,7 @@ class MigratorTest extends BaseTestCase
                 name: string
         ');
 
-        $this->assertModelsContain('namespace App\Models;', 'app/User.php');
+        $this->assertModelsContain('namespace App\Models;', 'app/Models/User.php');
     }
 
     /** @test */
@@ -1672,4 +1672,32 @@ class MigratorTest extends BaseTestCase
         $this->assertEquals('Boss', $jack->boss->name);
         $this->assertEquals('Jack', $boss->employees[0]->name);
     }
+
+    /** @test */
+    public function mirror()
+    {
+        $this->generateAndRun('
+            namespace {namespace}
+            User
+                mame: string
+                
+            User2 mirror(User)
+        ');
+
+        $this->generateAndRun('
+            namespace {namespace}
+            User
+                name: string
+                RENAME FIELD mame TO name
+
+            User2 mirror(User)
+        ');
+
+        $user = $this->newInstanceOf('User')->create(['name' => 'test']);
+        $this->assertEquals('test', $user->fresh()->name);
+
+        $user2 = $this->newInstanceOf('User2')->create(['name' => 'test']);
+        $this->assertEquals('test', $user2->fresh()->name);
+    }
+
 }
