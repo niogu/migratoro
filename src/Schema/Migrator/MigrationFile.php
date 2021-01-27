@@ -12,13 +12,13 @@ class MigrationFile
     {
         $classes = self::getMigrationClasses();
 
-        $n = 0;
         do {
-            $class = 'Create'.Str::studly($t->getName()).'Table'.($n > 0 ? "{$n}" : '');
-            if ($isChange) {
-                $class = 'Update'.Str::studly($t->getName()).'Table'.($n > 0 ? "{$n}" : '');
-            }
-            $n++;
+            $prefix = $isChange ? 'Update' : 'Create';
+            $endsWith = Str::ucfirst(self::generateRandomString());
+            $studlyName = Str::studly($t->getName());
+
+            $class = "{$prefix}{$studlyName}Table{$endsWith}";
+
         } while (isset($classes[$class]) || class_exists($class) || self::classFileExists($class));
 
         $filename = sprintf('%s%03d_%s.php', date('Y_m_d_His'), self::$migrationNumber, Str::snake($class));
@@ -52,5 +52,13 @@ class MigrationFile
         }
 
         return $classes;
+    }
+
+    private static function generateRandomString(): string
+    {
+        $string = Str::lower(Str::random(8));
+        $charFromString = preg_replace('/\d+/u', '', $string)[0] ?? 'a';
+
+        return $charFromString . $string;
     }
 }
