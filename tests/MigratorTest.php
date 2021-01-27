@@ -242,7 +242,11 @@ class MigratorTest extends BaseTestCase
                 x: string
                 y: string
             ');
-            $this->assertMigrationsContain('UpdateUser45sTable1');
+
+            $uniqMigrationKey = ucfirst(substr(pathinfo(key($this->migrator->migrationsCreated))['filename'], -9, 8));
+            $this->assertMigrationsContain("UpdateUser45sTable{$uniqMigrationKey}");
+            $this->assertMigrationsNotContain('UpdateUser45sTable1');
+
         } finally {
             @unlink($filename);
         }
