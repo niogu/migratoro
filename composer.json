@@ -2,7 +2,7 @@
   "name": "niogu/migratoro",
   "license": "MIT",
   "require": {
-    "doctrine/dbal": "~2.0"
+    "doctrine/dbal": "~2.0|~3.0"
   },
   "require-dev": {
     "nunomaduro/collision": "^5",
