@@ -526,11 +526,13 @@ Item
     title: string Index
     slug: string Unique
     
-    complex1: string Index(index_named_one)
-    complex2: string Index(index_named_two)
+    # Complex index on two fields
+    field1: string Index(complex_index_name)
+    field2: string Index(complex_index_name)
     
-    unique1: string Unique(unique_named_one)
-    unique2: string Unique(unique_named_two)
+    # Complex unique on two fields
+    field3: string Unique(complex_unique_name)
+    field4: string Unique(complex_unique_name)
 ```
 
 # Null
