@@ -137,9 +137,9 @@ php artisan migratoro
 ```
 
 This will run all your existing migrations, look at the database, 
-create necessary *migrations* to make the `humans`, `pets`, `colors` tables look like described 
+create necessary *migrations* to make the `humans`, `pets`, `colors`, `tags` tables look like described 
 (though, it will not delete existing fields, unless asked) 
-and also will create or update `\App\Models\Human`, `App\Models\Pet`, `App\Models\Color` Eloquent *models*
+and also will create or update `App\Models\Human`, `App\Models\Pet`, `App\Models\Color`, `App\Models\Tag` Eloquent *models*
 with some `$cast` attributes and methods like `pet_tags()`, `pets()`, `colors()`, `tags()`.
 
 This defines a few models and a few relationships:
