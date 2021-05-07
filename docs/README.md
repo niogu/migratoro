@@ -433,7 +433,7 @@ Employee
     employees(): Employee[] <- Employee.boss()
 ```
 
-`<- Human.employees()` defines the inverse relationship.
+`<- Employee.employees()` defines the inverse relationship.
 
 Now we can do: `$employee->boss()` and `$employee->employees()`
 
