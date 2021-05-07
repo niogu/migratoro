@@ -529,8 +529,8 @@ Item
     complex1: string Index(index_named_one)
     complex2: string Index(index_named_two)
     
-    unique1: string Unique(index_named_one)
-    unique2: string Unique(index_named_two)
+    unique1: string Unique(unique_named_one)
+    unique2: string Unique(unique_named_two)
 ```
 
 # Null
