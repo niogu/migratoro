@@ -280,7 +280,7 @@ Post
     remarks(): Comment[]
 
 Comment
-    parent() Post
+    parent(): Post
 ```
 
 `Comment[]` means that this method returns `multiple` (collection) of `Comment`'s.
