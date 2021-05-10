@@ -15,7 +15,7 @@ Edit composer.json:
         "url": "https://github.com/niogu/migratoro"
     }
 ],
-``` 
+```
 
 ```
 composer require --dev niogu/migratoro:dev-master
@@ -29,15 +29,15 @@ Human
     name: string
 ```
 
-Run: 
+Run:
 
 ```
 php artisan migratoro
 ```
 
-This: 
+This:
 
-1. Generates a migration to create `humans` table with `name` field 
+1. Generates a migration to create `humans` table with `name` field
 2. Generates/updates `App\Models\Human` model
 
 Change the `database/schema.txt` to this:
@@ -67,37 +67,37 @@ Pet
 ... and now you have methods like `App\Models\Human::first()->pets()->first()` and `App\Models\Pet::first()->human`
 and `human_id` on `pets` table.
 
-(Everything related to database is done through migrations, model code changes are non-reversible automatically, at least for now) 
+(Everything related to database is done through migrations, model code changes are non-reversible automatically, at least for now)
 
-**But wait, there's more!** 
+**But wait, there's more!**
 
 * Generate fields
 * Generate relationships (one to one, one to many, many to many, has many through, polymorphic)
 * Many to many with automatic pivot table creation
-* Generate relationship methods on models, creation of indexes 
+* Generate relationship methods on models, creation of indexes
 * Create indexes, composite indexes, unique and composite unique indexes
-* Rename and delete fields and indexes (renaming of indexes requires Laravel 5.6.23+, with [my small contribution](https://github.com/laravel/framework/pull/24147) to the framework) 
+* Rename and delete fields and indexes (renaming of indexes requires Laravel 5.6.23+, with [my small contribution](https://github.com/laravel/framework/pull/24147) to the framework)
 * Generate/update `$casts` attributes for collection, array, and JSON types
-* Default values 
+* Default values
 * Self-reference
-* Enums 
-* Guarded fields 
+* Enums
+* Guarded fields
 * Custom pivot tables and field names, `as`, `withTimestamps`, etc...
 * Custom namespace and paths for models
-* Composite primary keys 
+* Composite primary keys
 * Date and Time with automatic `$casts` to Carbon models
-* ...probably something else too (read all about it below)  
+* ...probably something else too (read all about it below)
 
 Note: by default all generated fields are `nullable` (yes, you can change this to default to `not nullable`, [see below](#null)).
 
 ## Status: alpha testing, so be warned:
 
-> Note: The package works, but it is in very early stages, be careful. 
+> Note: The package works, but it is in very early stages, be careful.
 
-> Do **git commits** before you run it 
-> (it will change your models files, hopefully correctly, but just in case - 
-> you have an option to `git reset --hard`) 
-> and back up your local development databases periodically! 
+> Do **git commits** before you run it
+> (it will change your models files, hopefully correctly, but just in case -
+> you have an option to `git reset --hard`)
+> and back up your local development databases periodically!
 
 > It shouldn't do anything malicious/bad, but the package is pretty new and possibly unstable
 
@@ -112,7 +112,7 @@ Human
     height: float
     pets()
     pet_tags() via Pet: Tag[]
-    
+
 Pet
     name: string Default("Kitty"), NotNull
     born: datetime
@@ -120,25 +120,25 @@ Pet
     human()
     colors()
     tags()
-    
+
 Color
     color: string NotNull
     pets()
-    
+
 Tag
     material: enum(['copper','gold'])
     pet()
 ```
 
-and then: 
+and then:
 
 ```
 php artisan migratoro
 ```
 
-This will run all your existing migrations, look at the database, 
-create necessary *migrations* to make the `humans`, `pets`, `colors`, `tags` tables look like described 
-(though, it will not delete existing fields, unless asked) 
+This will run all your existing migrations, look at the database,
+create necessary *migrations* to make the `humans`, `pets`, `colors`, `tags` tables look like described
+(though, it will not delete existing fields, unless asked)
 and also will create or update `App\Models\Human`, `App\Models\Pet`, `App\Models\Color`, `App\Models\Tag` Eloquent *models*
 with some `$cast` attributes and methods like `pet_tags()`, `pets()`, `colors()`, `tags()`.
 
@@ -148,7 +148,7 @@ This defines a few models and a few relationships:
 * Pet has many Colors (many to many with pivot table) and Tags (one to many)
 * Human has many Tags through(via) Pet (has many through)
 
-It will also create `color_pet` Many to Many pivot table with `color_id` and `pet_id` 
+It will also create `color_pet` Many to Many pivot table with `color_id` and `pet_id`
 fields (everything is customizable).
 
 So, now you can do:
@@ -182,7 +182,7 @@ Does the enum work?
 ```
 
 $kitty->tags()->create(['material' => 'unobtanium']);
-... Check violation: 7 ERROR:  new row for relation "tags" violates 
+... Check violation: 7 ERROR:  new row for relation "tags" violates
     check constraint "tags_material_check"
 
 ```
@@ -211,12 +211,12 @@ $kitty->update(['born' => '2010-01-01']);
 
 ```
 
-Want to **change** something? 
+Want to **change** something?
 
-Easy! 
+Easy!
 
 Change it, run `php artisan migratoro` - it
-will look at what needs to be done, create migrations and update your models, 
+will look at what needs to be done, create migrations and update your models,
 like adding an **`Unique`** index for example:
 
 Change schema.txt, add `Unique`:
@@ -237,9 +237,9 @@ An unique index named `pets_name_unique_idx` (customizable) will be created (can
 ...
 
 >>> $kitty = $human->pets()->create(['name' => 'Kitty the Cat']);
-... Unique violation: 7 ERROR:  duplicate key value violates 
+... Unique violation: 7 ERROR:  duplicate key value violates
     unique constraint "pets_name_unique_idx"
-``` 
+```
 
 # Comments
 
@@ -258,12 +258,12 @@ Human:
 ```
 Post
     comments()
-    
+
 Comment
     post()
 ```
 
-Now we have `$post->comments()` and `$comment->post()`. 
+Now we have `$post->comments()` and `$comment->post()`.
 
 The field `post_id` will be created automatically in `comments` table.
 
@@ -272,15 +272,15 @@ You can change the field name to `my_post_id` like this: `post() via my_post_id`
 ## Different names
 
 What if we want to have methods named `remarks()` (instead of `comments()`), but pointing to `Comment`?
-Also `$comment->parent()` (instead of `post()`)? 
+Also `$comment->parent()` (instead of `post()`)?
 Easy, just add a "return type".
 
 ```
 Post
     remarks(): Comment[]
-    
+
 Comment
-    parent() Post
+    parent(): Post
 ```
 
 `Comment[]` means that this method returns `multiple` (collection) of `Comment`'s.
@@ -290,7 +290,7 @@ Comment
 ```
 User
     phone()
-    
+
 Phone
     user() via user_id
 ```
@@ -303,7 +303,7 @@ figuring out where to specify it:
 ```
 User
     phone()
-    
+
 Phone
     user()
 ```
@@ -312,10 +312,10 @@ Results in:
 
 Error:
 
-> Model User contains a confusing One to One definition between `User.phone()` 
-and `Phone.user()`. One to one requires a field in one of these tables. 
-To resolve it: 
-if User (usually) belongs to Phone - then add `phone() via phone_id` to User; 
+> Model User contains a confusing One to One definition between `User.phone()`
+and `Phone.user()`. One to one requires a field in one of these tables.
+To resolve it:
+if User (usually) belongs to Phone - then add `phone() via phone_id` to User;
 otherwise if Phone (usually) belongs to User -  then add `user() via user_id` to Phone.
 
 Which is easy to fix: add `via user_id` to `user()` definition:
@@ -323,7 +323,7 @@ Which is easy to fix: add `via user_id` to `user()` definition:
 ```
 User
     phone()
-    
+
 Phone
     user() via user_id
 ```
@@ -333,20 +333,20 @@ Phone
 ```
 User
     roles()
-    
+
 Role
     users()
 ```
 
-This will also automatically create migration to create `role_user` table 
-with `role_id` and `user_id` fields.  
+This will also automatically create migration to create `role_user` table
+with `role_id` and `user_id` fields.
 
-(see below for more complex cases, like changing the join, creating intermediary 
+(see below for more complex cases, like changing the join, creating intermediary
 table, specifying pivot name, etc...)
 
 ## Has many through
 
-So, the `Country` has many `Users`, each `User` has many `Posts`. 
+So, the `Country` has many `Users`, each `User` has many `Posts`.
 How do we get all `Country`'s `Posts`?
 
 After you do the two `has many` parts, the last part is `Country`: `posts() via User`:
@@ -355,11 +355,11 @@ After you do the two `has many` parts, the last part is `Country`: `posts() via 
 Country
     users()
     posts() via User
-    
+
 User
     posts()
     country()
-    
+
 Post
     user()
 ```
@@ -368,29 +368,29 @@ Now you can call `$country->posts()`
 
 ## Polymorphic (like comments for multiple things)
 
-`Posts` and `Videos` should have comments, but 1 comment can't belong to 
+`Posts` and `Videos` should have comments, but 1 comment can't belong to
 2+ `Posts` or `Post` and `Video` at the same time.
 
 ```
 Post
     comments()
-    
+
 Video
     comments()
-    
+
 Comment
     commentable(): Post|Video
 ```
 
-`commentable(): Post|Video` is the "polymorphic return type" 
-(it returns a single `Post` or single `Video`), which will 
+`commentable(): Post|Video` is the "polymorphic return type"
+(it returns a single `Post` or single `Video`), which will
 create `commentable_type` and `commentable_id` fields.
  
-Now, we have `$post->comments()`, `$video->comments()`. 
+Now, we have `$post->comments()`, `$video->comments()`.
 
 ## Polymorphic many to many (like tags for multiple things)
 
-`Posts` and `Videos` can both have `Tags`, but same `Tag` can be for 
+`Posts` and `Videos` can both have `Tags`, but same `Tag` can be for
 2+ `Posts` or `Post` and `Video` at the same time.
 (Requires intermediate `Taggable` model)
 
@@ -398,7 +398,7 @@ Now, we have `$post->comments()`, `$video->comments()`.
 Post
     name: string
     tags() via Taggable
-    
+
 Video
     name: string
     tags() via Taggable
@@ -408,7 +408,7 @@ Tag
     posts() via Taggable
     videos() via Taggable
     taggables()
-    
+
 Taggable
     tag()
     taggable(): Post|Video
@@ -433,7 +433,7 @@ Employee
     employees(): Employee[] <- Employee.boss()
 ```
 
-`<- Human.employees()` defines the inverse relationship.
+`<- Employee.employees()` defines the inverse relationship.
 
 Now we can do: `$employee->boss()` and `$employee->employees()`
 
@@ -450,7 +450,7 @@ which returns single Employee, and inverse method is `Employee.employees()`.
 employees(): Employee[]
 ```
 
-means that method returns multiple `Employee`s (the return type here is 
+means that method returns multiple `Employee`s (the return type here is
 not strictly necessary, since method name is plural).
 
 # Changing namespace
@@ -474,7 +474,6 @@ namespace MyModels src/MyModels
 Model
     name: string
 ```
- 
 
 # Date and time
 
@@ -525,10 +524,10 @@ This also creates `$casts` in model.
 Item
     title: string Index
     slug: string Unique
-    
+
     complex1: string Index(index_named_one)
     complex2: string Index(index_named_two)
-    
+
     unique1: string Unique(index_named_one)
     unique2: string Unique(index_named_two)
 ```
@@ -602,11 +601,11 @@ User
     user_field1: integer
     name: string
     roles(): Role[] Join(Role.role_pk = role_user.role_id AND role_user.user_id = User.user_field1)
-    
+
 Role
     role_pk: increments PrimaryKey
     name: string
-    users(): User[] 
+    users(): User[]
 ```
 
 # Many to many (with intermediate model)
@@ -619,7 +618,7 @@ AssignedRole
 
 User
     roles(): Role[] Join(Role.id = AssignedRole.role_id AND AssignedRole.user_id = User.id)
-    
+
 Role
     users(): User[] 
 ```
@@ -629,9 +628,9 @@ Role
 ```
 User
     podcasts(): Podcast[] As("subscription"), PivotWithTimestamps
-    
+
 Podcast
-    users() 
+    users()
 ```
 
 Now you can do `$user->podcasts[0]->subscription->created_at`.
