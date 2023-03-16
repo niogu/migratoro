@@ -222,7 +222,7 @@ class GeoRect extends Model
         ');
 
         $this->assertStringContainsString('last_bought', $this->getModelContents('Item'));
-        $this->assertStringContainsString("protected \$dates = [\n        'last_bought',\n    ];\n",
+        $this->assertStringContainsString("protected \$casts = [\n        'last_bought' => 'datetime',\n    ];\n",
             $this->getModelContents('Item'));
 
         $ns = $this->generateAndRun('
@@ -233,7 +233,7 @@ class GeoRect extends Model
         ');
 
         $this->assertStringContainsString('last_sold', $this->getModelContents('Item'));
-        $this->assertStringContainsString("protected \$dates = [\n        'last_bought',\n        'last_sold',\n    ];\n",
+        $this->assertStringContainsString("protected \$casts = [\n        'last_bought' => 'datetime',\n        'last_sold' => 'datetime',\n    ];\n",
             $this->getModelContents('Item'));
     }
 }

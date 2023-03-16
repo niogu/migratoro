@@ -1146,7 +1146,7 @@ class ParserTest extends BaseTestCase
         $this->assertEquals("[\"easy\", 'hard']", $this->findField('Type', 'en')->getParam1());
     }
 
-    private function assertModelExists($model)
+    protected function assertModelExists($model)
     {
         $this->assertInstanceOf(ModelCommand::class, $this->parsed->getModel($model));
     }

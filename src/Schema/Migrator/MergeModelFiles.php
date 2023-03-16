@@ -26,7 +26,6 @@ class MergeModelFiles
         $content = $this->mergeMethods($content);
         $content = $this->mergeCasts($content);
         $content = $this->mergeGuarded($content);
-        $content = $this->mergeDates($content);
 
         file_put_contents($this->fullPath, $content);
         //return new \RuntimeException("Cannot merge");
@@ -117,34 +116,4 @@ class MergeModelFiles
         return $content;
     }
 
-    /**
-     * @param $content
-     *
-     * @return null|string|string[]
-     */
-    private function mergeDates($content)
-    {
-        if ($this->model->dateFields()) {
-            if (!Str::contains($content, '$dates')) {
-                $content = preg_replace(
-                    '/(class\s+([\s\S]*?)\{)/s',
-                    "\\1\n    ".trim($this->model->dates())."\n",
-                    $content
-                );
-            } else {
-                $regex = 'protected\s+(?P<dates>\$dates[\s\S]*?\]\s*;)';
-                preg_match('#'.$regex.'#', $content, $m);
-
-                try {
-                    eval($m['dates']);
-                    /** @var string $dates from eval */
-                    $dates = array_unique(array_merge($dates, $this->model->dateFields()));
-                    $content = preg_replace('#'.$regex.'#', trim($this->model->dates($dates)), $content);
-                } catch (Exception $e) {
-                }
-            }
-        }
-
-        return $content;
-    }
 }

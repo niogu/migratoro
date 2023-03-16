@@ -44,7 +44,7 @@ class ModelBuilder
             $this->use1()."\n".
             "\n".
             "class {$this->name} extends {$this->extendsStmt()}\n{\n".
-            $this->guarded().$this->primaryKey().$this->casts().$this->dates()."\n".
+            $this->guarded().$this->primaryKey().$this->casts()."\n".
             $this->methods()."\n".
             '}';
     }
@@ -107,8 +107,8 @@ class ModelBuilder
     public function castFields()
     {
         $res = [];
-        if ($fields = $this->model->getFieldsWithType(['json', 'jsonb', 'collection', 'array'])) {
-            $map = ['jsonb' => 'json'];
+        if ($fields = $this->model->getFieldsWithType(['json', 'jsonb', 'collection', 'array', 'datetime', 'date', 'dateTimeTz'])) {
+            $map = ['jsonb' => 'json', 'dateTimeTz' => 'datetime'];
             foreach ($fields as $field) {
                 $type = data_get($map, $field->getFieldType(), $field->getFieldType());
                 $res[$field->getName()] = $type;
@@ -131,33 +131,6 @@ class ModelBuilder
         }
 
         return $casts;
-    }
-
-    public function dateFields()
-    {
-        $res = [];
-        if ($fields = $this->model->getFieldsWithType(['datetime', 'date', 'dateTimeTz'])) {
-            foreach ($fields as $field) {
-                $res[] = $field->getName();
-            }
-        }
-
-        return $res;
-    }
-
-    public function dates($dateFields = null)
-    {
-        $dates = '';
-        $toCast = $dateFields ?: $this->dateFields();
-        if ($toCast) {
-            $dates = "\n    protected \$dates = [\n";
-            foreach ($toCast as $_ => $name) {
-                $dates .= "        '$name',\n";
-            }
-            $dates .= '    ];';
-        }
-
-        return $dates;
     }
 
     public function methods()

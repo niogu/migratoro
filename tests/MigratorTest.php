@@ -610,7 +610,7 @@ class MigratorTest extends BaseTestCase
                 what_time3: dateTimeTz
         ');
 
-        $this->assertModelsContain("protected \$dates = [\n        'what_time',\n        'what_time2',\n        'what_time3',");
+        $this->assertModelsContain("protected \$casts = [\n        'what_time' => 'datetime',\n        'what_time2' => 'date',\n        'what_time3' => 'datetime',");
         $user = $this->newInstanceOf('User')->create([
             'what_time'  => Carbon::now(),
             'what_time2' => Carbon::now(),
@@ -623,7 +623,7 @@ class MigratorTest extends BaseTestCase
 
         $this->assertNotNull($user->fresh()->what_time2);
         $this->assertInstanceOf(Carbon::class, $user->fresh()->what_time2);
-        $this->assertEquals(0, now()->diffInMinutes($user->fresh()->what_time2));
+        $this->assertEquals(0, today()->diffInMinutes($user->fresh()->what_time2));
 
         $this->assertNotNull($user->fresh()->what_time3);
         $this->assertInstanceOf(Carbon::class, $user->fresh()->what_time3);
