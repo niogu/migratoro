@@ -217,42 +217,6 @@ class MigratorTest extends BaseTestCase
     }
 
     /** @test */
-    public function it_still_creates_duplicate_migration_class_names_between_calls()
-    {
-        $this->assertFalse(MigrationFile::classFileExists('UpdateUser45sTable'));
-        $this->assertFalse(MigrationFile::classFileExists('UpdateUser45sTable'));
-
-        try {
-            $filename = database_path('migrations/2018_05_08_195104001_update_user45s_table.php');
-            file_put_contents(
-                $filename,
-                '<?php use Illuminate\Database\Migrations\Migration;
-                 class UpdateUser45sTable extends Migration {}'
-            );
-            $this->assertTrue(MigrationFile::classFileExists('UpdateUser45sTable'));
-            $this->assertTrue(MigrationFile::classFileExists('UpdateUser45sTable'));
-            $this->generateAndRun('
-            namespace {namespace}
-            User45
-                x: string
-            ');
-            $this->generateAndRun('
-            namespace {namespace}
-            User45
-                x: string
-                y: string
-            ');
-
-            $uniqMigrationKey = ucfirst(substr(pathinfo(key($this->migrator->migrationsCreated))['filename'], -9, 8));
-            $this->assertMigrationsContain("UpdateUser45sTable{$uniqMigrationKey}");
-            $this->assertMigrationsNotContain('UpdateUser45sTable1');
-
-        } finally {
-            @unlink($filename);
-        }
-    }
-
-    /** @test */
     public function test2()
     {
         $this->assertTableNotExists('users');
@@ -741,8 +705,7 @@ class MigratorTest extends BaseTestCase
                 history: array
         ");
 
-        $this->assertMigrationsNotContain('CreateUsersTable');
-        $this->assertMigrationsContain('UpdateUsersTable');
+        $this->assertMigrationsContain('return new class extends Migration');
         $this->assertMigrationsContain("Schema::table('users', function (Blueprint \$table)");
         $this->assertMigrationsContain("\$table->dropColumn('history');");
 
