@@ -210,8 +210,12 @@ class Migrator
 
         $field->setExists(true);
 
-        if ($field->isCurrentlyNullable() != $field->getNullable()) {
-            return true;
+        try {
+            if ($field->isCurrentlyNullable() != $field->getNullable()) {
+                return true;
+            }
+        } catch (\Doctrine\DBAL\Exception $e) {
+            return false;
         }
 
         return false;
