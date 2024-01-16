@@ -115,6 +115,69 @@ class MergeFileTest extends BaseTestCase
     }
 
     /** @test */
+    public function preserves_custom_class_based_casts()
+    {
+        $ns = $this->generateAndRun('
+            namespace {namespace}
+            
+            User
+                name: string
+        ');
+
+        $this->generateAndRun('
+            namespace {namespace}
+
+            User
+                name: string
+                js1: json 
+                js2: json 
+                js3: json 
+                js4: json 
+        ');
+
+        $filename = array_keys($this->migrator->modelsUpdated)[0];
+        $this->replaceTextInModel(
+            $filename,
+            "'js1' => 'json',",
+            "'js1' => CustomCastClass::class,"
+        );
+
+        $this->replaceTextInModel(
+            $filename,
+            "'js2' => 'json',",
+            "'js2' => \Custom\CustomCastClass::class,"
+        );
+
+        $this->replaceTextInModel(
+            $filename,
+            "'js3' => 'json',",
+            "'js3' => '\\Custom\\CustomCastClass',"
+        );
+
+        $this->replaceTextInModel(
+            $filename,
+            "'js4' => 'json',",
+            "'js4' => 'CustomCastClass',"
+        );
+
+        $this->generateAndRun('
+            namespace {namespace}
+
+            User
+                name: string
+                js1: json
+                js2: json 
+                js3: json 
+                js4: json 
+        ');
+
+        $this->assertStringContainsString("'js1' => CustomCastClass::class,", $this->getModelContents('User'));
+        $this->assertStringContainsString("'js2' => \\Custom\\CustomCastClass::class,", $this->getModelContents('User'));
+        $this->assertStringContainsString("'js3' => '\\Custom\\CustomCastClass',", $this->getModelContents('User'));
+        $this->assertStringContainsString("'js4' => 'CustomCastClass',", $this->getModelContents('User'));
+    }
+
+    /** @test */
     public function merges_dates()
     {
         $this->markTestIncomplete('TODO@slava: create test ');
@@ -235,5 +298,13 @@ class GeoRect extends Model
         $this->assertStringContainsString('last_sold', $this->getModelContents('Item'));
         $this->assertStringContainsString("protected \$casts = [\n        'last_bought' => 'datetime',\n        'last_sold' => 'datetime',\n    ];\n",
             $this->getModelContents('Item'));
+    }
+
+    public function replaceTextInModel($filename, string $what, string $withWhat): void
+    {
+        // $filename = __DIR__ . '/' . str_replace('\\', '/', $ns) . '/' . $model . '.php';
+        $model = file_get_contents($filename);
+        $model = str_replace($what, $withWhat, $model);
+        file_put_contents($filename, $model);
     }
 }

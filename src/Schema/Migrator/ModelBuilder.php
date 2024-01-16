@@ -118,14 +118,19 @@ class ModelBuilder
         return $res;
     }
 
-    public function casts($castFields = null)
+    public function casts($originalCastsString = '')
     {
         $casts = '';
-        $toCast = $castFields ?: $this->castFields();
+        $toCast = $this->castFields();
         if ($toCast) {
             $casts = "\n    protected \$casts = [\n";
             foreach ($toCast as $name => $type) {
-                $casts .= "        '$name' => '$type',\n";
+                // preserve original class/string-based casts
+                if($originalCastsString && preg_match("#['\"]{$name}['\"]\s*=>\s*(['\"][^'\"]+['\"]|\S*?::class)#", $originalCastsString, $m)) {
+                    $casts .= "        '$name' => $m[1],\n";
+                } else {
+                    $casts .= "        '$name' => '$type',\n";
+                }
             }
             $casts .= '    ];';
         }

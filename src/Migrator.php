@@ -29,6 +29,7 @@ class Migrator
     public $migrationsCreated = [];
     public $warnings = [];
     private $overwriteModels = false;
+    protected $createdFileNames = [];
 
     /** @var MySqlBuilder|PostgresBuilder */
     protected $db;
@@ -93,8 +94,6 @@ class Migrator
             }
         }
     }
-
-    protected $createdFileNames = [];
 
     private function createMigrations()
     {

@@ -71,14 +71,7 @@ class MergeModelFiles
             } else {
                 $regex = 'protected\s+(?P<casts>\$casts[\s\S]*?\]\s*;)';
                 preg_match('#'.$regex.'#', $content, $m);
-
-                try {
-                    eval($m['casts']);
-                    /** @var string $casts from eval */
-                    $casts = array_merge($casts, $this->model->castFields());
-                    $content = preg_replace('#'.$regex.'#', trim($this->model->casts($casts)), $content);
-                } catch (Exception $e) {
-                }
+                $content = preg_replace('#'.$regex.'#', trim($this->model->casts($m['casts'])), $content);
             }
         }
 
