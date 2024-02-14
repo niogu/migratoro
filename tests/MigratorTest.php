@@ -808,6 +808,30 @@ class MigratorTest extends BaseTestCase
     }
 
     /** @test */
+    public function drop_index_before_drop_column()
+    {
+        $this->generateAndRun('
+            namespace {namespace}
+            
+            Item
+                title: string
+        ');
+
+        $this->assertMigrationsNotContain("\$table->index(['title'], 'items_title_idx')");
+        $this->assertIndexNotExists('items', 'items_title_idx');
+
+        $this->generateAndRun("
+            namespace {$this->ns}
+            
+            Item
+                title: string 
+                field2: string Index
+        ");
+
+        $this->assertMigrationsContain("\$table->dropIndex('items_field2_idx');\n\n            \$table->dropColumn('field2');");
+    }
+
+    /** @test */
     public function creates_index_with_multiple_fields()
     {
         $this->generateButDontRun('

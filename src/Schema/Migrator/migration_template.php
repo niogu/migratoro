@@ -31,19 +31,22 @@ if (!$isChange) {
     foreach ($t->getCommands() as $command) {
         $down .= "            \$table{$command->downCall()};\n";
     }
-    foreach ($t->getFields() as $field) {
-        $down .= "            \$table{$field->getLaravelDownCall()};\n";
-    }
-    if ($t->getFields()) {
-        $down .= "\n";
-    }
+    $printed = false;
     foreach ($t->getIndexes() as $name => $fields1) {
+        $printed = true;
         $names = collect($fields1)->map->getQuotedName()->implode(', ');
         $down .= "            \$table->dropIndex('$name');\n";
     }
     foreach ($t->getUnique() as $name => $fields1) {
+        $printed = true;
         $names = collect($fields1)->map->getQuotedName()->implode(', ');
         $down .= "            \$table->dropUnique('$name');\n";
+    }
+    if ($printed) {
+        $down .= "\n";
+    }
+    foreach ($t->getFields() as $field) {
+        $down .= "            \$table{$field->getLaravelDownCall()};\n";
     }
 
     $down .= "        });\n";
