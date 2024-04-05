@@ -8,30 +8,31 @@ use Migratoro\Schema\Migrator\ModelBuilder;
 use Migratoro\Schema\ModelCommand;
 use Migratoro\Schema\Parser;
 use Migratoro\Schema\Schema;
+use PHPUnit\Framework\Attributes\Test;
 
 class MergeFileTest extends BaseTestCase
 {
     use GenerateAndRun;
 
-    /** @test */
+    #[Test]
     public function merges_namespacestmt()
     {
         $this->markTestIncomplete('TODO@slava: create test ');
     }
 
-    /** @test */
+    #[Test]
     public function merges_use1()
     {
         $this->markTestIncomplete('TODO@slava: create test ');
     }
 
-    /** @test */
+    #[Test]
     public function merges_extendsstmt()
     {
         $this->markTestIncomplete('TODO@slava: create test ');
     }
 
-    /** @test */
+    #[Test]
     public function merges_guarded()
     {
         $this->generateAndRun('
@@ -52,7 +53,7 @@ class MergeFileTest extends BaseTestCase
         $this->assertModelsContain("protected \$guarded = ['is_admin', 'is_admin2'];");
     }
 
-    /** @test */
+    #[Test]
     public function merges_guarded1()
     {
         $this->generateAndRun('
@@ -72,13 +73,13 @@ class MergeFileTest extends BaseTestCase
         $this->assertModelsContain("protected \$guarded = ['is_admin'];");
     }
 
-    /** @test */
+    #[Test]
     public function merges_primarykey()
     {
         $this->markTestIncomplete('TODO@slava: create test ');
     }
 
-    /** @test */
+    #[Test]
     public function merges_casts()
     {
         $this->generateAndRun('
@@ -114,7 +115,7 @@ class MergeFileTest extends BaseTestCase
         $this->assertEquals([2], $this->newInstanceOf('User')->first()->js2);
     }
 
-    /** @test */
+    #[Test]
     public function preserves_custom_class_based_casts()
     {
         $ns = $this->generateAndRun('
@@ -177,13 +178,13 @@ class MergeFileTest extends BaseTestCase
         $this->assertStringContainsString("'js4' => 'CustomCastClass',", $this->getModelContents('User'));
     }
 
-    /** @test */
+    #[Test]
     public function merges_dates()
     {
         $this->markTestIncomplete('TODO@slava: create test ');
     }
 
-    /** @test */
+    #[Test]
     public function should_add_guarded_if_it_was_removed()
     {
         $file = '<?php namespace App;
@@ -209,7 +210,7 @@ class GeoRect extends Model
         $this->assertEquals($newContent, $newContent2);
     }
 
-    /** @test */
+    #[Test]
     public function should_add_casts_if_it_was_removed()
     {
         $file = '<?php namespace App;
@@ -236,7 +237,7 @@ class GeoRect extends Model
         $this->assertEquals($newContent, $newContent2);
     }
 
-    /** @test */
+    #[Test]
     public function should_add_methods()
     {
         $file = '<?php namespace App;
@@ -270,7 +271,7 @@ class GeoRect extends Model
         $this->assertEquals($newContent, $newContent2);
     }
 
-    /** @test */
+    #[Test]
     public function merges_datetime()
     {
         $ns = $this->generateAndRun('

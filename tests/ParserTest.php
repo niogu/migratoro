@@ -8,6 +8,7 @@ use Migratoro\Schema\MethodCommand;
 use Migratoro\Schema\ModelCommand;
 use Migratoro\Schema\Parser;
 use Migratoro\Schema\Schema;
+use PHPUnit\Framework\Attributes\Test;
 
 class ParserTest extends BaseTestCase
 {
@@ -19,7 +20,7 @@ class ParserTest extends BaseTestCase
         parent::setUp();
     }
 
-    /** @test */
+    #[Test]
     public function parses_has_one()
     {
         $this->parse('
@@ -50,7 +51,7 @@ class ParserTest extends BaseTestCase
         $this->assertCount(1, $this->parsed->getModel('\App\Models\Phone')->getCommands());
     }
 
-    /** @test */
+    #[Test]
     public function resolve_has_one_via_field()
     {
         $this->parse('
@@ -67,7 +68,7 @@ class ParserTest extends BaseTestCase
         $this->assertTrue($this->findMethod('User', 'phone')->isHasOne());
     }
 
-    /** @test */
+    #[Test]
     public function resolve_has_one_via_join()
     {
         $this->parse('
@@ -83,7 +84,7 @@ class ParserTest extends BaseTestCase
         $this->assertTrue($this->findMethod('Phone', 'user')->isBelongsTo());
     }
 
-    /** @test */
+    #[Test]
     public function parses_has_one_2nd()
     {
         $this->parse('
@@ -98,7 +99,7 @@ class ParserTest extends BaseTestCase
         $this->assertEquals('User.phone_id = Phone.id', $this->findMethod('\App\Models\User', 'phone')->getJoinString());
     }
 
-    /** @test */
+    #[Test]
     public function parses_namespaces()
     {
         $this->parse('
@@ -129,14 +130,14 @@ class ParserTest extends BaseTestCase
         $this->assertEquals('Model', $this->parsed->getModel('\OtherNs\Model')->getShortName());
     }
 
-    /** @test */
+    #[Test]
     public function parse_at_zero_indent()
     {
         $this->parse("Item\n"."  title: string\n");
         $this->assertTrue(true); // no exception happened
     }
 
-    /** @test */
+    #[Test]
     public function parses_command()
     {
         $c = (new Parser())->parseCommand('RENAME INDEX idx3 TO idx4');
@@ -146,7 +147,7 @@ class ParserTest extends BaseTestCase
         $this->assertEquals('idx4', $c->getArg2());
     }
 
-    /** @test */
+    #[Test]
     public function parses_method()
     {
         $parser = new Parser();
@@ -167,7 +168,7 @@ class ParserTest extends BaseTestCase
         $this->assertTrue($m->isPivotWithTimestamps());
     }
 
-    /** @test */
+    #[Test]
     public function parses_field()
     {
         $parser = new Parser();
@@ -184,7 +185,7 @@ class ParserTest extends BaseTestCase
         $this->assertEquals(['models_id_field_unique_idx', 'idxu'], $m->getUniqueIndexNames());
     }
 
-    /** @test */
+    #[Test]
     public function get_tables()
     {
         $this->parse('
@@ -201,7 +202,7 @@ class ParserTest extends BaseTestCase
         $this->assertCount(2, $this->parsed->getModel('\App\Models\User')->getFields());
     }
 
-    /** @test */
+    #[Test]
     public function get_tables_pivots()
     {
         $this->parse('
@@ -216,7 +217,7 @@ class ParserTest extends BaseTestCase
         $this->assertEquals(['users', 'roles', 'role_user'], $this->parsed->getTables());
     }
 
-    /** @test */
+    #[Test]
     public function get_tables_pivots_via_join()
     {
         $this->parse('
@@ -232,7 +233,7 @@ class ParserTest extends BaseTestCase
         $this->assertEquals(['users', 'roles', 'role_user_custom'], $this->parsed->getTables());
     }
 
-    /** @test */
+    #[Test]
     public function bad_join()
     {
         $this->expectException(\RuntimeException::class);
@@ -245,7 +246,7 @@ class ParserTest extends BaseTestCase
         ');
     }
 
-    /** @test */
+    #[Test]
     public function get_tables_pivots_via_join_table_name()
     {
         $this->parse('
@@ -262,7 +263,7 @@ class ParserTest extends BaseTestCase
         $this->assertEquals(['users', 'roles', 'role_user_custom'], $this->parsed->getTables());
     }
 
-    /** @test */
+    #[Test]
     public function returns_many()
     {
         $this->parse('
@@ -281,7 +282,7 @@ class ParserTest extends BaseTestCase
         $this->assertFalse($this->findMethod('User', 'role')->returnsMany());
     }
 
-    /** @test */
+    #[Test]
     public function has_one_has_no_pivots()
     {
         $this->parse('
@@ -295,7 +296,7 @@ class ParserTest extends BaseTestCase
         $this->assertEquals(['users', 'roles'], $this->parsed->getTables());
     }
 
-    /** @test */
+    #[Test]
     public function should_not_use_plurals_in_model()
     {
         $this->expectException(\RuntimeException::class);
@@ -304,7 +305,7 @@ class ParserTest extends BaseTestCase
         $this->parse('Users');
     }
 
-    /** @test */
+    #[Test]
     public function spec_1()
     {
         $this->parse('
@@ -338,7 +339,7 @@ class ParserTest extends BaseTestCase
         $this->assertEquals(MethodCommand::HAS_ONE, $phoneMethod->relationType());
     }
 
-    /** @test */
+    #[Test]
     public function which_has_one()
     {
         $message = 'Model User contains a confusing One to One definition between `User.phone()` and `Phone.user()`. '.
@@ -365,7 +366,7 @@ class ParserTest extends BaseTestCase
         $phoneMethod->relationType();
     }
 
-    /** @test */
+    #[Test]
     public function parses_fields()
     {
         $this->parse('
@@ -383,7 +384,7 @@ class ParserTest extends BaseTestCase
         $this->assertMethodNotExists('Phone', 'number');
     }
 
-    /** @test */
+    #[Test]
     public function parses_via()
     {
         $p = new Parser();
@@ -393,7 +394,7 @@ class ParserTest extends BaseTestCase
         $this->assertEquals('phone_id', $m->getVia());
     }
 
-    /** @test */
+    #[Test]
     public function spec_2()
     {
         $this->parse('
@@ -422,7 +423,7 @@ class ParserTest extends BaseTestCase
         $this->assertEquals(MethodCommand::HAS_ONE, $phoneMethod->relationType());
     }
 
-    /** @test */
+    #[Test]
     public function spec_3()
     {
         $this->parse('
@@ -446,7 +447,7 @@ class ParserTest extends BaseTestCase
         $this->assertEquals(MethodCommand::BELONGS_TO, $phoneMethod->relationType());
     }
 
-    /** @test */
+    #[Test]
     public function spec_3_inverse_method()
     {
         $this->parse('
@@ -461,7 +462,7 @@ class ParserTest extends BaseTestCase
         $this->assertEquals('home_phone', $this->findMethod('Phone', 'user')->inverseMethod()->getName());
     }
 
-    /** @test */
+    #[Test]
     public function spec_3_double_belongs_to()
     {
         $this->parse('
@@ -480,7 +481,7 @@ class ParserTest extends BaseTestCase
         $this->assertEquals(MethodCommand::BELONGS_TO, $phoneMethod->relationType());
     }
 
-    /** @test */
+    #[Test]
     public function spec_3_sub1()
     {
         $this->parse('
@@ -501,7 +502,7 @@ class ParserTest extends BaseTestCase
         $this->assertEquals(MethodCommand::BELONGS_TO, $this->findMethod('User', 'home_phone')->relationType());
     }
 
-    /** @test */
+    #[Test]
     public function spec_3_sub4()
     {
         $this->expectExceptionMessage(
@@ -516,7 +517,7 @@ class ParserTest extends BaseTestCase
         $this->findMethod('Phone', 'user')->relationType();
     }
 
-    /** @test */
+    #[Test]
     public function spec_3_sub3()
     {
         $this->parse('
@@ -538,7 +539,7 @@ class ParserTest extends BaseTestCase
         $this->assertEquals(MethodCommand::BELONGS_TO, $this->findMethod('Phone', 'user')->relationType());
     }
 
-    /** @test */
+    #[Test]
     public function spec_3_sub2()
     {
         $this->parse('
@@ -554,7 +555,7 @@ class ParserTest extends BaseTestCase
         $this->assertEquals(MethodCommand::BELONGS_TO, $phoneMethod->relationType());
     }
 
-    /** @test */
+    #[Test]
     public function spec_4()
     {
         $this->parse('
@@ -576,7 +577,7 @@ class ParserTest extends BaseTestCase
         $this->assertEquals('post_id', $this->findMethod('Comment', 'post')->belongsToFieldName());
     }
 
-    /** @test */
+    #[Test]
     public function spec_5()
     {
         $this->parse('
@@ -599,7 +600,7 @@ class ParserTest extends BaseTestCase
         $this->assertTrue($this->findMethod('Role', 'users')->isManyToMany());
     }
 
-    /** @test */
+    #[Test]
     public function spec_6()
     {
         $this->parse('
@@ -621,7 +622,7 @@ class ParserTest extends BaseTestCase
         $this->assertTrue($this->findMethod('Role', 'users')->isManyToMany());
     }
 
-    /** @test */
+    #[Test]
     public function spec_6a()
     {
         $this->parse('
@@ -642,7 +643,7 @@ class ParserTest extends BaseTestCase
         $this->assertTrue($this->findMethod('Role', 'users')->isManyToMany());
     }
 
-    /** @test */
+    #[Test]
     public function spec_7a()
     {
         $this->parse('
@@ -658,7 +659,7 @@ class ParserTest extends BaseTestCase
         $this->assertEquals('role_user_customs', $this->parsed->getModel('\App\Models\RoleUserCustom')->getTableName());
     }
 
-    /** @test */
+    #[Test]
     public function spec_7()
     {
         $this->parse('
@@ -681,13 +682,13 @@ class ParserTest extends BaseTestCase
         $this->assertTrue($this->findMethod('Role', 'users')->isManyToMany());
     }
 
-    /** @test */
+    #[Test]
     public function has_many_through()
     {
         $this->assertNull(FieldCommand::fromString('posts() via User', new ModelCommand('', '')));
     }
 
-    /** @test */
+    #[Test]
     public function spec_8()
     {
         $this->parse('
@@ -729,7 +730,7 @@ class ParserTest extends BaseTestCase
         $this->assertEquals('post_id', $this->findMethod('User', 'posts')->belongsToFieldName());
     }
 
-    /** @test */
+    #[Test]
     public function spec_8b()
     {
         $this->parse('
@@ -764,7 +765,7 @@ class ParserTest extends BaseTestCase
         $this->assertEquals('Post[]', $this->findMethod('Country', 'posts')->getReturnType());
     }
 
-    /** @test */
+    #[Test]
     public function spec_8a()
     {
         $this->expectExceptionMessage('define method `Country.users()`');
@@ -779,7 +780,7 @@ class ParserTest extends BaseTestCase
         $this->assertTrue($this->findMethod('User', 'country')->isBelongsTo());
     }
 
-    /** @test */
+    #[Test]
     public function spec_9a()
     {
         $this->expectExceptionMessage('Your `Comment.commentable()` method asks for polymorphic relation with array, I am not sure how to do it, did you mean just `Post|Video` instead of `Post|Video[]`?');
@@ -792,7 +793,7 @@ class ParserTest extends BaseTestCase
         $this->assertEquals('Post|Video[]', $this->findMethod('Comment', 'commentable')->getReturnType());
     }
 
-    /** @test */
+    #[Test]
     public function spec_9a2()
     {
         $this->parse('
@@ -804,7 +805,7 @@ class ParserTest extends BaseTestCase
         $this->assertEquals('Post|Video', $this->findMethod('Comment', 'commentables')->getReturnType());
     }
 
-    /** @test */
+    #[Test]
     public function spec_9a1()
     {
         $this->parse('
@@ -815,7 +816,7 @@ class ParserTest extends BaseTestCase
         $this->assertEquals('Post|Video', $this->findMethod('Comment', 'commentable')->getReturnType());
     }
 
-    /** @test */
+    #[Test]
     public function spec_9()
     {
         $this->parse('
@@ -854,7 +855,7 @@ class ParserTest extends BaseTestCase
         $this->assertEquals(['id', 'body', 'commentable_id', 'commentable_type'], $this->fieldNamesFor('Comment'));
     }
 
-    /** @test */
+    #[Test]
     public function spec_10()
     {
         $this->parse('
@@ -902,7 +903,7 @@ class ParserTest extends BaseTestCase
         $this->assertEquals('string', $this->findField('Taggable', 'taggable_type')->getFieldType());
     }
 
-    /** @test */
+    #[Test]
     public function spec_11()
     {
         $this->parse('
@@ -934,7 +935,7 @@ class ParserTest extends BaseTestCase
         $this->assertTrue($this->findMethod('Owner', 'cars')->isHasMany());
     }
 
-    /** @test */
+    #[Test]
     public function spec_12()
     {
         $this->parse('
@@ -958,7 +959,7 @@ class ParserTest extends BaseTestCase
         $this->assertEquals('Human.employees()', $this->findMethod('Human', 'boss')->inverseMethod()->humanName());
     }
 
-    /** @test */
+    #[Test]
     public function spec_12a()
     {
         $this->parse('
@@ -976,7 +977,7 @@ class ParserTest extends BaseTestCase
         $this->assertEquals('Human.boss()', $this->findMethod('Human', 'employees')->inverseMethod()->humanName());
     }
 
-    /** @test */
+    #[Test]
     public function spec_12c()
     {
         $this->parse('
@@ -993,7 +994,7 @@ class ParserTest extends BaseTestCase
         $this->assertEquals('Human.boss()', $this->findMethod('Human', 'employees')->inverseMethod()->humanName());
     }
 
-    /** @test */
+    #[Test]
     public function spec_12b()
     {
         $this->expectExceptionMessage('parse');
@@ -1006,7 +1007,7 @@ class ParserTest extends BaseTestCase
         ');
     }
 
-    /** @test */
+    #[Test]
     public function spec_13()
     {
         $this->parse('');
@@ -1027,14 +1028,14 @@ class ParserTest extends BaseTestCase
         $this->assertTrue($this->parsed->getDefaultIsGuarded());
     }
 
-    /** @test */
+    #[Test]
     public function referential_integrity()
     {
         /* @see https://laravel.com/docs/5.6/migrations#foreign-key-constraints */
         $this->markTestIncomplete('TODO@slava: create test referential_integrity');
     }
 
-    /** @test */
+    #[Test]
     public function weird_primary_key()
     {
         $this->parse('
@@ -1053,7 +1054,7 @@ class ParserTest extends BaseTestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function implicit_primary_key()
     {
         $this->parse('
@@ -1066,7 +1067,7 @@ class ParserTest extends BaseTestCase
         $this->assertEquals(['id'], $this->parsed->getModel('User')->getPrimaryKeyFieldNames());
     }
 
-    /** @test */
+    #[Test]
     public function join_m2m()
     {
         $this->parse('
@@ -1084,7 +1085,7 @@ class ParserTest extends BaseTestCase
         $this->assertEquals('role_pk1', $this->findMethod('Role', 'users')->ourKeyInPivot());
     }
 
-    /** @test */
+    #[Test]
     public function join_m2m2()
     {
         $this->parse('
@@ -1114,7 +1115,7 @@ class ParserTest extends BaseTestCase
         $this->assertTrue($this->findModel('AssignedRole')->extendsPivot());
     }
 
-    /** @test */
+    #[Test]
     public function should_not_be_two_tables_with_same_table_name()
     {
         $this->expectExceptionMessage('There are two models with table_name is `assigned`: AssignedRole and AssignedUser. You must have exactly 1 Model for 1 Table.');
@@ -1125,7 +1126,7 @@ class ParserTest extends BaseTestCase
         ');
     }
 
-    /** @test */
+    #[Test]
     public function numbered_types()
     {
         $this->parse('

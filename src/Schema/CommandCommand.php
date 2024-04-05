@@ -144,15 +144,17 @@ class CommandCommand extends Command
     public function needToRun()
     {
         if ($this->isRenameIndex() || $this->isDeleteIndex()) {
-            $details = $this->getSchemaManager()->listTableDetails($this->getModel()->getTableName());
-            if ($details->hasIndex($this->arg1)) {
+            /** @var \Illuminate\Database\Schema\SQLiteBuilder $schema */
+            $schema = \DB::getSchemaBuilder();
+            $exists = collect($schema->getIndexes($this->getModel()->getTableName()))->where('name', $this->arg1)->count() > 0;
+            if ($exists) {
                 return true;
             }
         }
 
         if ($this->isRenameField() || $this->isDeleteField()) {
-            $columns = $this->getSchemaManager()->listTableColumns($this->getModel()->getTableName());
-            if (isset($columns[$this->arg1])) {
+            $exists = collect(\DB::getSchemaBuilder()->getColumns($this->getModel()->getTableName()))->where('name', $this->arg1)->count() > 0;
+            if ($exists) {
                 return true;
             }
         }

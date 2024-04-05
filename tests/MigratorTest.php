@@ -5,12 +5,13 @@ namespace Migratoro\Tests;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Artisan;
 use Migratoro\Schema\Migrator\MigrationFile;
+use PHPUnit\Framework\Attributes\Test;
 
 class MigratorTest extends BaseTestCase
 {
     use GenerateAndRun;
 
-    /** @test */
+    #[Test]
     public function test1()
     {
         $this->assertTableNotExists('users');
@@ -36,7 +37,7 @@ class MigratorTest extends BaseTestCase
         $this->assertEquals(1, \App\Models\Test1\User::count());
     }
 
-    /** @test */
+    #[Test]
     public function fields_already_exists()
     {
         $this->generateAndRun('
@@ -62,7 +63,7 @@ class MigratorTest extends BaseTestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function fields_already_exists_down()
     {
         $this->generateAndRun('
@@ -87,7 +88,7 @@ class MigratorTest extends BaseTestCase
         $this->assertFieldNotExists('items', 'title1');
     }
 
-    /** @test */
+    #[Test]
     public function cannot_rename_and_have_old_field()
     {
         $message = 'You have a `RENAME FIELD title1` command and you also try to create the same field `title1`';
@@ -101,7 +102,7 @@ class MigratorTest extends BaseTestCase
         ');
     }
 
-    /** @test */
+    #[Test]
     public function double_call()
     {
         $this->generateAndRun('
@@ -127,7 +128,7 @@ class MigratorTest extends BaseTestCase
         // this used to throw an exception
     }
 
-    /** @test */
+    #[Test]
     public function default_for_boolean()
     {
         $this->generateAndRun('
@@ -143,7 +144,7 @@ class MigratorTest extends BaseTestCase
         $this->assertEquals('1', $user->fresh()->is_bender_great); // sqlite stores it as 1
     }
 
-    /** @test */
+    #[Test]
     public function default_for_int_float()
     {
         $this->generateAndRun('
@@ -162,37 +163,37 @@ class MigratorTest extends BaseTestCase
         $this->assertEquals(100, $user->fresh()->weight);
     }
 
-    /** @test */
+    #[Test]
     public function IMPORTANT_custom_raw_types_like_for_nearestneigh()
     {
         $this->markTestIncomplete('TODO@slava: create test IMPORTANT_custom_raw_types_like_for_nearestneigh');
     }
 
-    /** @test */
+    #[Test]
     public function IMPORTANT_automatically_re_create_index()
     {
         $this->markTestIncomplete('TODO@slava: create test IMPORTANT_automatically_re_create_index');
     }
 
-    /** @test */
+    #[Test]
     public function IMPORTANT_automatically_re_create_field()
     {
         $this->markTestIncomplete('TODO@slava: create test IMPORTANT_automatically_re_create_index');
     }
 
-    /** @test */
+    #[Test]
     public function IMPORTANT_undo_last_action()
     {
         $this->markTestIncomplete('TODO@slava: create test undo_last_action');
     }
 
-    /** @test */
+    #[Test]
     public function IMPORTANT_display_what_has_been_created_modified_models()
     {
         $this->markTestIncomplete('TODO@slava: create test display_what_has_been_created_modified_models');
     }
 
-    /** @test */
+    #[Test]
     public function rename_field_down()
     {
         $this->generateAndRun('
@@ -216,7 +217,7 @@ class MigratorTest extends BaseTestCase
         $this->assertFieldExists('items', 'title');
     }
 
-    /** @test */
+    #[Test]
     public function test2()
     {
         $this->assertTableNotExists('users');
@@ -244,7 +245,7 @@ class MigratorTest extends BaseTestCase
         $this->assertEquals('123', $user->fresh()->phone->number);
     }
 
-    /** @test */
+    #[Test]
     public function test_not_null()
     {
         $this->assertTableNotExists('users');
@@ -268,7 +269,7 @@ class MigratorTest extends BaseTestCase
         $this->assertMigrationsContain("\$table->integer('user_id');", 'phone');
     }
 
-    /** @test */
+    #[Test]
     public function one_to_one()
     {
         $this->migrator->migrate('
@@ -284,7 +285,7 @@ class MigratorTest extends BaseTestCase
         $this->assertModelsContain("hasOne(\App\Models\Test3\Phone::class)", 'User');
     }
 
-    /** @test */
+    #[Test]
     public function one_to_one_complex()
     {
         $this->migrator->migrate('
@@ -319,7 +320,7 @@ class MigratorTest extends BaseTestCase
         $this->assertEquals('123', $user->fresh()->phone->number);
     }
 
-    /** @test */
+    #[Test]
     public function one_to_one_complex2()
     {
         $this->generateButDontRun('
@@ -352,7 +353,7 @@ class MigratorTest extends BaseTestCase
         $this->assertModelsContain("protected \$primaryKey = 'phone_primary_key'", 'Phone');
     }
 
-    /** @test */
+    #[Test]
     public function numbered_types()
     {
         /* @see https://laravel.com/docs/5.6/migrations#creating-columns */
@@ -387,7 +388,7 @@ class MigratorTest extends BaseTestCase
         $this->assertMigrationsContain("\$table->enum('en', ['easy','hard'])->nullable();");
     }
 
-    /** @test */
+    #[Test]
     public function one_to_many()
     {
         $this->generateAndRun("
@@ -409,7 +410,7 @@ class MigratorTest extends BaseTestCase
         $this->assertEquals($comment, \App\Models\Test6\Post::first()->comments()->first());
     }
 
-    /** @test */
+    #[Test]
     public function one_to_many_complex()
     {
         $this->generateAndRun("
@@ -443,7 +444,7 @@ class MigratorTest extends BaseTestCase
         $this->assertModelsContain("protected \$primaryKey = 'comment_primary_key'", 'Comment');
     }
 
-    /** @test */
+    #[Test]
     public function many_to_many()
     {
         $ns = $this->generateAndRun('
@@ -475,7 +476,7 @@ class MigratorTest extends BaseTestCase
         $this->assertEquals(['Admin'], $user->roles()->pluck('name')->all());
     }
 
-    /** @test */
+    #[Test]
     public function m2m_with_timestamps()
     {
         $ns = $this->generateAndRun('
@@ -497,7 +498,7 @@ class MigratorTest extends BaseTestCase
         $this->assertNotNull($user->fresh()->podcasts[0]->pivot->created_at);
     }
 
-    /** @test */
+    #[Test]
     public function m2m_timestamps()
     {
         $ns = $this->generateAndRun('
@@ -519,7 +520,7 @@ class MigratorTest extends BaseTestCase
         $this->assertNotNull($user->fresh()->podcasts[0]->subscription->created_at);
     }
 
-    /** @test */
+    #[Test]
     public function m2m_model()
     {
         $ns = $this->generateAndRun('
@@ -562,7 +563,7 @@ class MigratorTest extends BaseTestCase
         $this->assertEquals(123, $user->roles[0]->pivot->expires);
     }
 
-    /** @test */
+    #[Test]
     public function datetime_time_etc()
     {
         $this->generateAndRun('
@@ -583,18 +584,18 @@ class MigratorTest extends BaseTestCase
 
         $this->assertNotNull($user->fresh()->what_time);
         $this->assertInstanceOf(Carbon::class, $user->fresh()->what_time);
-        $this->assertEquals(0, now()->diffInMinutes($user->fresh()->what_time));
+        $this->assertEqualsWithDelta(0, now()->diffInMinutes($user->fresh()->what_time), 1);
 
         $this->assertNotNull($user->fresh()->what_time2);
         $this->assertInstanceOf(Carbon::class, $user->fresh()->what_time2);
-        $this->assertEquals(0, today()->diffInMinutes($user->fresh()->what_time2));
+        $this->assertEqualsWithDelta(0, today()->diffInMinutes($user->fresh()->what_time2), 1);
 
         $this->assertNotNull($user->fresh()->what_time3);
         $this->assertInstanceOf(Carbon::class, $user->fresh()->what_time3);
-        $this->assertEquals(0, now()->diffInMinutes($user->fresh()->what_time3));
+        $this->assertEqualsWithDelta(0, now()->diffInMinutes($user->fresh()->what_time3), 1);
     }
 
-    /** @test */
+    #[Test]
     public function default_value()
     {
         $this->generateAndRun('
@@ -608,7 +609,7 @@ class MigratorTest extends BaseTestCase
         $this->assertEquals('Mr.Y', $u->fresh()->name);
     }
 
-    /** @test */
+    #[Test]
     public function app_namespace()
     {
         $this->generateAndRun('
@@ -619,7 +620,7 @@ class MigratorTest extends BaseTestCase
         $this->assertModelsContain('namespace App\Models;', 'app/Models/User.php');
     }
 
-    /** @test */
+    #[Test]
     public function works_with_json()
     {
         $this->generateAndRun('
@@ -634,7 +635,7 @@ class MigratorTest extends BaseTestCase
         $this->assertEquals([1, 2, 3], $user->fresh()->history);
     }
 
-    /** @test */
+    #[Test]
     public function works_with_jsonb()
     {
         $this->generateAndRun('
@@ -649,7 +650,7 @@ class MigratorTest extends BaseTestCase
         $this->assertEquals([1, 2, 3], $user->fresh()->history);
     }
 
-    /** @test */
+    #[Test]
     public function works_with_collection()
     {
         $this->generateAndRun('
@@ -665,7 +666,7 @@ class MigratorTest extends BaseTestCase
         $this->assertEquals([1, 2, 3], $user->fresh()->history->all());
     }
 
-    /** @test */
+    #[Test]
     public function works_with_array()
     {
         $this->generateAndRun('
@@ -681,7 +682,7 @@ class MigratorTest extends BaseTestCase
         $this->assertEquals([1, 2, 3], $user->fresh()->history);
     }
 
-    /** @test */
+    #[Test]
     public function creates_fields_in_existing_tables()
     {
         $this->overwriteModels();
@@ -734,7 +735,7 @@ class MigratorTest extends BaseTestCase
         $this->assertEquals(null, $this->newInstanceOf('User')->first()->history1);
     }
 
-    /** @test */
+    #[Test]
     public function creates_indexes()
     {
         $this->generateAndRun('
@@ -747,7 +748,7 @@ class MigratorTest extends BaseTestCase
         $this->assertMigrationsContain("\$table->index(['title'], 'items_title_idx');");
     }
 
-    /** @test */
+    #[Test]
     public function creates_indexes1()
     {
         $this->generateAndRun('
@@ -760,7 +761,7 @@ class MigratorTest extends BaseTestCase
         $this->assertMigrationsContain("\$table->index(['title'], 'i1_idx')");
     }
 
-    /** @test */
+    #[Test]
     public function creates_indexes2()
     {
         $this->generateAndRun('
@@ -807,7 +808,7 @@ class MigratorTest extends BaseTestCase
         $this->runGenerated();
     }
 
-    /** @test */
+    #[Test]
     public function drop_index_before_drop_column()
     {
         $this->generateAndRun('
@@ -831,7 +832,7 @@ class MigratorTest extends BaseTestCase
         $this->assertMigrationsContain("\$table->dropIndex('items_field2_idx');\n\n            \$table->dropColumn('field2');");
     }
 
-    /** @test */
+    #[Test]
     public function creates_index_with_multiple_fields()
     {
         $this->generateButDontRun('
@@ -855,7 +856,7 @@ class MigratorTest extends BaseTestCase
         $this->assertIndexNotExists('items', 'price_idx');
     }
 
-    /** @test */
+    #[Test]
     public function changes_fields_definitions_nullable()
     {
         $this->generateAndRun('
@@ -885,7 +886,7 @@ class MigratorTest extends BaseTestCase
         $this->assertEquals([], $this->migrator->migrationsCreated);
     }
 
-    /** @test */
+    #[Test]
     public function updates_existing_model_files()
     {
         $this->generateAndRun('
@@ -918,7 +919,7 @@ class MigratorTest extends BaseTestCase
         $this->assertEquals(1, $this->newInstanceOf('User')->first()->phone()->count());
     }
 
-    /** @test */
+    #[Test]
     public function updates_existing_model_files2()
     {
         $this->generateAndRun('
@@ -963,19 +964,19 @@ class MigratorTest extends BaseTestCase
         $this->assertEquals(1, $this->newInstanceOf('User')->first()->phone()->count());
     }
 
-    /** @test */
+    #[Test]
     public function correctly_changes_fields_upon_down()
     {
         $this->markTestIncomplete('TODO@slava: create test correctly_changes_fields_upon_down');
     }
 
-    /** @test */
+    #[Test]
     public function migrations_should_have_more_meaningful_names()
     {
         $this->markTestIncomplete('TODO@slava: create test migrations_should_have_more_meaningful_names');
     }
 
-    /** @test */
+    #[Test]
     public function renames_fields()
     {
         $this->generateAndRun('
@@ -997,7 +998,7 @@ class MigratorTest extends BaseTestCase
         $this->assertEquals('test', $user->fresh()->name);
     }
 
-    /** @test */
+    #[Test]
     public function renames_fields_but_not_twice()
     {
         $this->generateAndRun('
@@ -1028,7 +1029,7 @@ class MigratorTest extends BaseTestCase
         $this->assertEquals('test', $user->fresh()->name);
     }
 
-    /** @test */
+    #[Test]
     public function deletes_fields()
     {
         $this->generateAndRun('
@@ -1051,7 +1052,7 @@ class MigratorTest extends BaseTestCase
         $this->assertEquals('test', $user->fresh()->name);
     }
 
-    /** @test */
+    #[Test]
     public function deletes_fields_but_not_twice()
     {
         $this->generateAndRun('
@@ -1083,7 +1084,7 @@ class MigratorTest extends BaseTestCase
         $this->assertEquals('test', $user->fresh()->name);
     }
 
-    /** @test */
+    #[Test]
     public function renames_indexes()
     {
         $this->generateAndRun('
@@ -1109,7 +1110,7 @@ class MigratorTest extends BaseTestCase
         $this->assertIndexExists('users', 'i2');
     }
 
-    /** @test */
+    #[Test]
     public function renames_indexes_bad()
     {
         $message = 'You have a `RENAME INDEX i1` command and you also try to create Index(i1) on a field `User.name`';
@@ -1129,7 +1130,7 @@ class MigratorTest extends BaseTestCase
         ');
     }
 
-    /** @test */
+    #[Test]
     public function deletes_indexes()
     {
         $this->generateAndRun('
@@ -1152,7 +1153,7 @@ class MigratorTest extends BaseTestCase
         $this->assertIndexNotExists('users', 'i1');
     }
 
-    /** @test */
+    #[Test]
     public function guarded_fields()
     {
         $this->generateAndRun('
@@ -1166,7 +1167,7 @@ class MigratorTest extends BaseTestCase
         $this->assertModelsContain("protected \$guarded = ['is_admin', 'is_admin2'];");
     }
 
-    /** @test */
+    #[Test]
     public function deletes_indexes_bad()
     {
         $message = 'You have a `DELETE INDEX i2` command and you also try to create Index(i2) on a field `User.name`.';
@@ -1186,7 +1187,7 @@ class MigratorTest extends BaseTestCase
         ');
     }
 
-    /** @test */
+    #[Test]
     public function creates_unique()
     {
         $this->generateAndRun('
@@ -1199,7 +1200,7 @@ class MigratorTest extends BaseTestCase
         $this->assertMigrationsContain("\$table->unique(['title'], 'items_title_unique_idx');");
     }
 
-    /** @test */
+    #[Test]
     public function creates_unique1()
     {
         $this->generateAndRun('
@@ -1212,7 +1213,7 @@ class MigratorTest extends BaseTestCase
         $this->assertMigrationsContain("\$table->unique(['title'], 'i1_idx')");
     }
 
-    /** @test */
+    #[Test]
     public function creates_unique2()
     {
         $this->generateAndRun('
@@ -1259,43 +1260,43 @@ class MigratorTest extends BaseTestCase
         $this->runGenerated();
     }
 
-    /** @test */
+    #[Test]
     public function creates_primary_key()
     {
         $this->markTestIncomplete('TODO@slava: create test');
     }
 
-    /** @test */
+    #[Test]
     public function adds_annotations_fields_to_models()
     {
         $this->markTestIncomplete('TODO@slava: create test adds_annotations_fields_to_models');
     }
 
-    /** @test */
+    #[Test]
     public function gin_gist_indexes()
     {
         $this->markTestIncomplete('TODO@slava: create test gin_gist_indexes');
     }
 
-    /** @test */
+    #[Test]
     public function spatial_indexes()
     {
         $this->markTestIncomplete('TODO@slava: create test spatial_indexes');
     }
 
-    /** @test */
+    #[Test]
     public function default_value_with_comma_quotes_etc()
     {
         $this->markTestIncomplete('TODO@slava: create test default_value_with_comma_quotes_etc');
     }
 
-    /** @test */
+    #[Test]
     public function adds_fields_to_indices()
     {
         $this->markTestIncomplete('TODO@slava: create test adds_fields_to_indices');
     }
 
-    /** @test */
+    #[Test]
     public function m2m_model_join()
     {
         $ns = $this->generateAndRun('
@@ -1329,7 +1330,7 @@ class MigratorTest extends BaseTestCase
         $this->assertEquals(['Admin'], $user->roles()->pluck('name')->all());
     }
 
-    /** @test */
+    #[Test]
     public function many_to_many_pk()
     {
         $ns = $this->generateAndRun('
@@ -1367,7 +1368,7 @@ class MigratorTest extends BaseTestCase
         $this->assertEquals(['Admin'], $user->roles()->pluck('name')->all());
     }
 
-    /** @test */
+    #[Test]
     public function many_to_many_pk1()
     {
         $ns = $this->generateAndRun('
@@ -1390,7 +1391,7 @@ class MigratorTest extends BaseTestCase
         $this->assertEquals(['Admin'], $user->roles()->pluck('name')->all());
     }
 
-    /** @test */
+    #[Test]
     public function many_to_many_pk2()
     {
         $this->generateAndRun('
@@ -1413,7 +1414,7 @@ class MigratorTest extends BaseTestCase
         $this->assertEquals(['Admin'], $user->roles()->pluck('name')->all());
     }
 
-    /** @test */
+    #[Test]
     public function has_many_through()
     {
         /** @see https://laravel.com/docs/5.6/eloquent-relationships#has-many-through */
@@ -1447,7 +1448,7 @@ class MigratorTest extends BaseTestCase
         $this->assertEquals(1, $country->posts()->count());
     }
 
-    /** @test */
+    #[Test]
     public function has_many_through_complex()
     {
         $ns = $this->generateAndRun('
@@ -1483,7 +1484,7 @@ class MigratorTest extends BaseTestCase
         $this->assertEquals(1, $country->posts()->count());
     }
 
-    /** @test */
+    #[Test]
     public function polymorphic_relations()
     {
         /** @see https://laravel.com/docs/5.6/eloquent-relationships#polymorphic-relations */
@@ -1514,7 +1515,7 @@ class MigratorTest extends BaseTestCase
         $this->assertEquals(['How did he do it?'], $video->fresh()->comments->pluck('body')->all());
     }
 
-    /** @test */
+    #[Test]
     public function polymorphic_relations_complex()
     {
         $ns = $this->generateAndRun('
@@ -1550,7 +1551,7 @@ class MigratorTest extends BaseTestCase
         $this->assertEquals($video->title, $comment2->fresh()->commentable->title);
     }
 
-    /** @test */
+    #[Test]
     public function many_to_many_polymorphic_relations()
     {
         $ns = $this->generateAndRun('
@@ -1588,7 +1589,7 @@ class MigratorTest extends BaseTestCase
         $this->assertEquals([$video->name], $tag2->videos()->pluck('name')->all());
     }
 
-    /** @test */
+    #[Test]
     public function many_to_many_polymorphic_relations_complex()
     {
         $this->expectExceptionMessage('Currently, we don\'t support polymorphic many-to-many with custom Primary Key ');
@@ -1632,7 +1633,7 @@ class MigratorTest extends BaseTestCase
         $this->assertEquals([$video->name], $tag2->videos()->pluck('name')->all());
     }
 
-    /** @test */
+    #[Test]
     public function self_reference()
     {
         $ns = $this->generateAndRun('
@@ -1664,7 +1665,7 @@ class MigratorTest extends BaseTestCase
         $this->assertEquals('Jack', $boss->employees[0]->name);
     }
 
-    /** @test */
+    #[Test]
     public function mirror()
     {
         $this->generateAndRun('

@@ -144,9 +144,7 @@ class Field
 
     public function isCurrentlyNullable()
     {
-        $column = $this->getFieldDoctrine();
-
-        return !$column->getNotnull();
+        return collect(\DB::getSchemaBuilder()->getColumns($this->tableName))->where('name', $this->name)->first()['nullable'];
     }
 
     /**
@@ -168,6 +166,6 @@ class Field
      */
     private function getSchemaManager()
     {
-        return \DB::getDoctrineSchemaManager();
+        return \DB::connection()->getDoctrineSchemaManager();
     }
 }

@@ -222,16 +222,18 @@ class Migrator
 
     public function indexExists($tableName, $indexName)
     {
-        $indexes = $this->getSchemaManager()->listTableIndexes($tableName);
-
-        return isset($indexes[$indexName]);
+        /** @var \Illuminate\Database\Schema\SQLiteBuilder $schema */
+        $schema = \DB::getSchemaBuilder();
+        $exists = collect($schema->getIndexes($tableName))->where('name', $indexName)->count() > 0;
+        return $exists;
     }
 
     public function uniqueExists($tableName, $indexName)
     {
-        $indexes = $this->getSchemaManager()->listTableIndexes($tableName);
-
-        return isset($indexes[$indexName]);
+        /** @var \Illuminate\Database\Schema\SQLiteBuilder $schema */
+        $schema = \DB::getSchemaBuilder();
+        $exists = collect($schema->getIndexes($tableName))->where('unique', true)->where('name', $indexName)->count() > 0;
+        return $exists;
     }
 
     /**
