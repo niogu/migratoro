@@ -2,6 +2,8 @@
 
 namespace Migratoro\Schema\Migrator;
 
+use Illuminate\Support\Facades\Schema;
+
 class Field
 {
     private $exists = false;
@@ -144,30 +146,9 @@ class Field
 
     public function isCurrentlyNullable()
     {
-        $column = $this->getFieldDoctrine();
-
-        return !$column->getNotnull();
+        $columns = Schema::getColumns($this->tableName);
+        $column = collect($columns)->where('name', $this->name)->first();
+        return $column['nullable'];
     }
 
-    /**
-     * @param $tableName
-     * @param $fieldName
-     *
-     * @return \Doctrine\DBAL\Schema\Column
-     */
-    private function getFieldDoctrine(): \Doctrine\DBAL\Schema\Column
-    {
-        $tableName = $this->tableName;
-
-        return $this->getSchemaManager()->listTableColumns($tableName)[$this->getName()] ??
-            $this->getSchemaManager()->listTableColumns($tableName)['"'.$this->getName().'"'];
-    }
-
-    /**
-     * @return \Doctrine\DBAL\Schema\AbstractSchemaManager
-     */
-    private function getSchemaManager()
-    {
-        return \DB::getDoctrineSchemaManager();
-    }
 }

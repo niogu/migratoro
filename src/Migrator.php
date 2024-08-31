@@ -209,12 +209,8 @@ class Migrator
 
         $field->setExists(true);
 
-        try {
-            if ($field->isCurrentlyNullable() != $field->getNullable()) {
-                return true;
-            }
-        } catch (\Doctrine\DBAL\Exception $e) {
-            return false;
+        if ($field->isCurrentlyNullable() != $field->getNullable()) {
+            return true;
         }
 
         return false;
@@ -222,24 +218,12 @@ class Migrator
 
     public function indexExists($tableName, $indexName)
     {
-        $indexes = $this->getSchemaManager()->listTableIndexes($tableName);
-
-        return isset($indexes[$indexName]);
+        return \Illuminate\Support\Facades\Schema::hasIndex($tableName, $indexName);
     }
 
     public function uniqueExists($tableName, $indexName)
     {
-        $indexes = $this->getSchemaManager()->listTableIndexes($tableName);
-
-        return isset($indexes[$indexName]);
-    }
-
-    /**
-     * @return \Doctrine\DBAL\Schema\AbstractSchemaManager
-     */
-    private function getSchemaManager()
-    {
-        return \DB::getDoctrineSchemaManager();
+        return \Illuminate\Support\Facades\Schema::hasIndex($tableName, $indexName, 'unique');
     }
 
     public function overwriteModels()

@@ -583,7 +583,7 @@ class MigratorTest extends BaseTestCase
 
         $this->assertNotNull($user->fresh()->what_time);
         $this->assertInstanceOf(Carbon::class, $user->fresh()->what_time);
-        $this->assertEquals(0, now()->diffInMinutes($user->fresh()->what_time));
+        $this->assertEqualsWithDelta(0, now()->diffInMinutes($user->fresh()->what_time), delta: 0.1);
 
         $this->assertNotNull($user->fresh()->what_time2);
         $this->assertInstanceOf(Carbon::class, $user->fresh()->what_time2);
@@ -591,7 +591,7 @@ class MigratorTest extends BaseTestCase
 
         $this->assertNotNull($user->fresh()->what_time3);
         $this->assertInstanceOf(Carbon::class, $user->fresh()->what_time3);
-        $this->assertEquals(0, now()->diffInMinutes($user->fresh()->what_time3));
+        $this->assertEqualsWithDelta(0, now()->diffInMinutes($user->fresh()->what_time3), delta: 0.1);
     }
 
     /** @test */

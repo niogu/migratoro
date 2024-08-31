@@ -247,7 +247,11 @@ trait GenerateAndRun
         }
 
         if (!$found) {
-            $this->fail("None of migrations pass the filter '$filterNames' (none generated?)");
+            if ($filterNames === null) {
+                $this->fail("No migrations were generated");
+            } else {
+                $this->fail("None of migrations pass the filter '$filterNames' (none generated?)");
+            }
         }
 
         $this->assertTrue(true);

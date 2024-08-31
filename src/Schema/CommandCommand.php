@@ -144,28 +144,18 @@ class CommandCommand extends Command
     public function needToRun()
     {
         if ($this->isRenameIndex() || $this->isDeleteIndex()) {
-            $details = $this->getSchemaManager()->listTableDetails($this->getModel()->getTableName());
-            if ($details->hasIndex($this->arg1)) {
+            if ($this->indexExists($this->arg1)) {
                 return true;
             }
         }
 
         if ($this->isRenameField() || $this->isDeleteField()) {
-            $columns = $this->getSchemaManager()->listTableColumns($this->getModel()->getTableName());
-            if (isset($columns[$this->arg1])) {
+            if ($this->columnExists($this->arg1)) {
                 return true;
             }
         }
 
         return false;
-    }
-
-    /**
-     * @return \Doctrine\DBAL\Schema\AbstractSchemaManager
-     */
-    private function getSchemaManager()
-    {
-        return \DB::getDoctrineSchemaManager();
     }
 
     /**
@@ -198,5 +188,21 @@ class CommandCommand extends Command
     public function isDeleteField(): bool
     {
         return $this->subType == 'DeleteField';
+    }
+
+    private function columnExists(?string $arg1)
+    {
+        return $this->findColumn($arg1) !== null;
+    }
+
+    public function findColumn(?string $arg1)
+    {
+        $columns = \Illuminate\Support\Facades\Schema::getColumns($this->getModel()->getTableName());
+        return collect($columns)->where('name', $arg1)->first();
+    }
+
+    private function indexExists(?string $arg1)
+    {
+        return \Illuminate\Support\Facades\Schema::hasIndex($this->getModel()->getTableName(), $arg1);
     }
 }
